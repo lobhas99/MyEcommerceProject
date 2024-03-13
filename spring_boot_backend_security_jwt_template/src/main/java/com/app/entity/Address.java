@@ -1,6 +1,8 @@
 package com.app.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Entity
 public class Address extends BaseEntity {
 
 	private String name;
@@ -24,14 +27,16 @@ public class Address extends BaseEntity {
 	private String city;
 
 	private String state;
-
-	private String country;
 	
+	private String country;
+
 	@Column(name = "pin_code")
 	private String pinCode;
 
 	@ManyToOne
+	@JoinColumn(name="user_id")
 	private User user;
 
-	private String mobile_no;
+	@Column(name = "mobile_no")
+	private String mobileNumber;
 }

@@ -10,11 +10,10 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
-
-import org.hibernate.annotations.CollectionId;
 
 import com.app.enums.Role;
 
@@ -24,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,11 +40,11 @@ public class User extends BaseEntity {
 	@Column(name = "email", unique = true, length = 25)
 	private String email;
 
-	@Column(name = "password", length = 100, nullable = false)
+	@Column(name = "password", length = 100, nullable = false) 
 	private String password;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "role", length = 10)
+	@Column(name = "role", length = 20)
 	private Role role;
 
 	@Column(name = "mobile_no", length = 10)
@@ -54,7 +54,7 @@ public class User extends BaseEntity {
 	private LocalDate birthDate;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Address> address;
+	private List<Address> addresses=new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Review> review = new ArrayList<>();
