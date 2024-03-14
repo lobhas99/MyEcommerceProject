@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.SignInRequest;
 import com.app.dto.SigninResponse;
-import com.app.dto.Signup;
+import com.app.dto.UserDTO;
 import com.app.security.JwtUtils;
 import com.app.service.UserService;
 
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class LoginController {
 
 	@Autowired
@@ -33,9 +34,9 @@ public class LoginController {
 	private AuthenticationManager mgr;
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> signUpUser(@RequestBody @Valid Signup reqDTO) {
+	public ResponseEntity<?> signUpUser(@RequestBody @Valid UserDTO reqDTO) {
 		System.out.println(reqDTO);
-		return ResponseEntity.status(HttpStatus.CREATED).body(userService.userRegisteration(reqDTO));
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.userRegistration(reqDTO));
 	}
 
 	@PostMapping("/signin")
@@ -46,5 +47,6 @@ public class LoginController {
 		System.out.println(verifiedauth.getClass());
 		return ResponseEntity.ok(new SigninResponse(utils.generateJwtToken(verifiedauth), "successful Authentication"));
 	}
+	
 
 }

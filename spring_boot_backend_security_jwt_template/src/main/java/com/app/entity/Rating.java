@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -21,12 +22,12 @@ public class Rating extends BaseEntity{
 
 	private Integer rating;
 	
-	@ManyToOne
-	@JoinColumn(name="product_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="product_id",nullable = false)
 	private Product product;
 	
-	@ManyToOne
-	@JoinColumn(name="user_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="user_id",nullable = false)
 	private User user;
 	
 	@Column(name="created_at")

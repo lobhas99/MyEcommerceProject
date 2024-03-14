@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 
 import com.app.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,12 +56,14 @@ public class User extends BaseEntity {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Address> addresses=new ArrayList<>();
-
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Review> review = new ArrayList<>();
-
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Rating> rating = new ArrayList<>();
+//	
+//	@JsonIgnore
+//	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<Review> review = new ArrayList<>();
+//	
+//	@JsonIgnore
+//	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//	private List<Rating> rating = new ArrayList<>();
 
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;

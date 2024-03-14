@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CartItems extends BaseEntity {
 
+	@JsonIgnore
 	@ManyToOne
 	private Cart cart;
 
@@ -26,8 +29,8 @@ public class CartItems extends BaseEntity {
 
 	private Integer price;
 
-	@Column(name="dicounted_price")
+	@Column(name = "discounted_price")
 	private Integer discountedPrice;
 
-	
+	private Long userId;
 }
