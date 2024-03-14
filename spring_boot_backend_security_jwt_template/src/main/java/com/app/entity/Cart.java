@@ -38,5 +38,11 @@ public class Cart extends BaseEntity {
 
 	@Column(name = "total_items")
 	private Integer totalitems;
+	
+	@Column(name = "total_discounted_price")
+	private int totalDiscountedPrice;
+
+	@Column(name = "total_discount")
+	private int totalDiscount;
 
 }

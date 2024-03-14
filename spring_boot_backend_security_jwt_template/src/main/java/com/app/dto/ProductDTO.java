@@ -16,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class ProductDTO {
-
+	
 	private int isbn;
 
 	private String title;
@@ -38,5 +38,5 @@ public class ProductDTO {
 	private String photo;
 	
 	private LocalDate releasedDate;
-
+	
 }

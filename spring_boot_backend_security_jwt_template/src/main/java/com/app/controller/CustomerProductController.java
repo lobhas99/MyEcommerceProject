@@ -17,11 +17,11 @@ import com.app.service.ProductService;
 
 @RestController
 @RequestMapping("/api")
-public class UserProductController {
+public class CustomerProductController {
 
 	private ProductService productService;
 
-	public UserProductController(ProductService productService) {
+	public CustomerProductController(ProductService productService) {
 		this.productService = productService;
 	}
 

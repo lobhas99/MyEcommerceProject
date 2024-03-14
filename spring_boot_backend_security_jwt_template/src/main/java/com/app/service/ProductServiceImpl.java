@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
 		User user = userdao.findById(req.getUserId()).orElse(null);
 		System.out.println(user);
 		if (user == null)
-			return "user Not Found";
+			return "user not found";
 		String photo = storageService.store(req.getPic());
 		Product product = new Product();
 		product.setUser(user);
@@ -103,9 +103,7 @@ public class ProductServiceImpl implements ProductService {
 	public Page<Product> getAllProduct(String category, Integer minPrice, Integer maxPrice, String sort, String stock,
 			Integer pageNumber, Integer pageSize) {
 		Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
 		List<Product> products = productDao.filterProducts(category, minPrice, maxPrice, sort);
-
 		if (stock != null) {
 			if (stock.equals("in_stock"))
 				products = products.stream().filter(p -> p.getStock() > 0).collect(Collectors.toList());
@@ -118,7 +116,6 @@ public class ProductServiceImpl implements ProductService {
 		List<Product> pageContent = products.subList(startIndex, endIndex);
 		Page<Product> filteredProducts = new PageImpl<>(pageContent, pageable, products.size());
 		return filteredProducts;
-
 	}
 
 	@Override

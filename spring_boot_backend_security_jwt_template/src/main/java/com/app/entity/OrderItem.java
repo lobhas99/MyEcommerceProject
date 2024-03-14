@@ -37,5 +37,8 @@ public class OrderItem extends BaseEntity {
 
 	@Column(name = "delivery_date")
 	private LocalDateTime deliveryDate;
+	
+	@Column(name = "user_id")
+	private Long userId;
 
 }

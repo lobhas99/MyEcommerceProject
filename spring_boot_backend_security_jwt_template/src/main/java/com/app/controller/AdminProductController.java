@@ -22,7 +22,7 @@ import com.app.service.ProductService;
 
 @RestController
 @RequestMapping("/api/product")
-public class SellerProductController {
+public class AdminProductController {
 
 	@Autowired
 	private ProductService productService;

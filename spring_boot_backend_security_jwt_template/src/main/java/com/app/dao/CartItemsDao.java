@@ -8,9 +8,10 @@ import com.app.entity.Cart;
 import com.app.entity.CartItems;
 import com.app.entity.Product;
 
-public interface CartItemsDao extends JpaRepository<CartItems, Long>{
+public interface CartItemsDao extends JpaRepository<CartItems, Long> {
 
 	@Query("SELECT ci from CartItem ci where ci.cart=:cart and ci.product=:product and ci.userId=:userId")
-	public CartItems isCartItemExist(@Param("cart")Cart cart,@Param("product")Product product, @Param("userId")Long userId);
-	
+	public CartItems isCartItemExist(@Param("cart") Cart cart, @Param("product") Product product,
+			@Param("userId") Long userId);
+
 }
