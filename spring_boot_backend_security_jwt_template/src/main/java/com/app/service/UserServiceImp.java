@@ -36,8 +36,8 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public List<UserDTO> findAllSellers() {
-		List<User> users=userDao.findAllSellers();
+	public List<UserDTO> findAllAdmins() {
+		List<User> users=userDao.findAllAdmins();
 		return users.stream().map(u->mapper.map(u,UserDTO.class)).collect(Collectors.toList());
 	}
 

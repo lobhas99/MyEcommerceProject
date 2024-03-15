@@ -1,12 +1,9 @@
 package com.app.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,24 +18,14 @@ import lombok.Setter;
 public class OrderItem extends BaseEntity {
 
 	@ManyToOne
-	@JoinColumn(name = "order_id")
-	private Order order;
-
-	@OneToOne
-	@JoinColumn(name="product_id")
+	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	private Integer quantity;
+	@Column(columnDefinition = "int default 1")
+	private int quantity;
 
-	@Column(name = "discounted_price")
-	private Integer discountedPrice;
-
-	private Integer price;
-
-	@Column(name = "delivery_date")
-	private LocalDateTime deliveryDate;
-	
-	@Column(name = "user_id")
-	private Long userId;
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	private Order order;
 
 }

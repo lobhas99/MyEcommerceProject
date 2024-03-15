@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,11 +47,13 @@ public class ProductServiceImpl implements ProductService {
 		System.out.println(user);
 		if (user == null)
 			return "user not found";
-		String photo = storageService.store(req.getPic());
 		Product product = new Product();
-		product.setUser(user);
-		product.setPhoto(photo);
 		product = mapper.map(req, Product.class);
+		if (req.getPic() != null) {
+			String photo = storageService.store(req.getPic());
+			product.setPhoto(photo);
+		}
+		product.setCreatedAt(LocalDateTime.now());
 		productDao.save(product);
 		return "Product added Successfully";
 	}
@@ -75,8 +78,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<Product> getAllProducts() {
-		return productDao.findAll();
+	public List<ProductDTO> getAllProducts() {
+		List<Product> product = productDao.findAll();
+
+		return product.stream().map(p -> mapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+
 	}
 
 	@Override
@@ -95,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> searchProduct(String query) {
-		List<Product> products=productDao.searchProduct(query);
+		List<Product> products = productDao.searchProduct(query);
 		return products;
 	}
 
@@ -120,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> recentlyAddedProduct() {
-		List<Product> products=productDao.findTop10ByOrderByCreatedAtDesc();
+		List<Product> products = productDao.findTop10ByOrderByCreatedAtDesc();
 		return products;
 	}
 

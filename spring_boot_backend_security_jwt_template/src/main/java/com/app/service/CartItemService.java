@@ -1,20 +1,21 @@
 package com.app.service;
 
-import com.app.entity.Cart;
-import com.app.entity.CartItems;
-import com.app.entity.Product;
-import com.app.exception.CartItemException;
-import com.app.exception.UserException;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import com.app.dto.ApiResponse;
+import com.app.dto.CartItemDTO;
+import com.app.dto.CartItemQtyDTO;
 
 public interface CartItemService {
-	public CartItems createCartItem(CartItems cartItem);
 
-	public CartItems updateCartItem(Long userId, Long id, CartItems cartItem) throws CartItemException;
+	ApiResponse addToCart(@Valid Long userId, @Valid Long productId);
+	
+	List<CartItemDTO> displayCart(@Valid Long userId);
+	
+	ApiResponse removeFromCart(@Valid Long userId, @Valid Long productId);
 
-	public CartItems isCartItemExist(Cart cart, Product product, Long userId);
-
-	public void removeCartItem(Long userId, Long cartItemId) throws UserException, CartItemException;
-
-	public CartItems findCartItemById(Long cartItemId) throws CartItemException;
+	ApiResponse setQuantity(@Valid CartItemQtyDTO quantity);
 
 }

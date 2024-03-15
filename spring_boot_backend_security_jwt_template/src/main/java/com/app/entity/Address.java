@@ -2,8 +2,11 @@ package com.app.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,10 +36,13 @@ public class Address extends BaseEntity {
 	@Column(name = "pin_code")
 	private String pinCode;
 
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
-
 	@Column(name = "mobile_no")
 	private String mobileNumber;
+	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="user_id")
+	@MapsId
+	private User user;
+
+	
 }

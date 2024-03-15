@@ -9,10 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddItemDTO {
+public class CartItemQtyDTO {
 
 	private Long productId;
-	private Integer quantity;
-	private Integer price;
-	
+	private int quantity;
+	private Long userId;
+
 }

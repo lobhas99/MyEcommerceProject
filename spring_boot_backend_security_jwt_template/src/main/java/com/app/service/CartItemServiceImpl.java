@@ -1,82 +1,81 @@
 package com.app.service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.dao.CartItemsDao;
-import com.app.dto.UserDTO;
-import com.app.entity.Cart;
+import com.app.dao.ProductDao;
+import com.app.dao.UserDao;
+import com.app.dto.ApiResponse;
+import com.app.dto.CartItemDTO;
+import com.app.dto.CartItemQtyDTO;
 import com.app.entity.CartItems;
 import com.app.entity.Product;
-import com.app.exception.CartItemException;
-import com.app.exception.UserException;
+import com.app.entity.User;
 
 @Service
 @Transactional
 public class CartItemServiceImpl implements CartItemService {
 
 	@Autowired
+	private UserDao userDao;
+
+	@Autowired
+	private ProductDao productDao;
+
+	@Autowired
 	private CartItemsDao cartItemsDao;
 
 	@Autowired
-	private UserService userService;
+	private ModelMapper mapper;
 
 	@Override
-	public CartItems createCartItem(CartItems cartItem) {
-		cartItem.setQty(1);
-		cartItem.setPrice(cartItem.getProduct().getPrice() * cartItem.getQty());
-		return cartItemsDao.save(cartItem);
+	public ApiResponse addToCart(@Valid Long userId, @Valid Long productId) {
+
+		CartItems cartItems = cartItemsDao.findByUserIdAndProductId(userId, productId);
+
+		if (cartItems != null)
+			return new ApiResponse("Product is already present in the cart");
+
+		User user = userDao.getReferenceById(userId);
+		Product product = productDao.getReferenceById(productId);
+		CartItems cartItem = new CartItems();
+		cartItem.setProduct(product);
+		cartItem.setQuantity(1);
+		cartItem.setUser(user);
+		cartItemsDao.save(cartItem);
+
+		return new ApiResponse("Product added to your cart");
 	}
 
 	@Override
-	public CartItems updateCartItem(Long userId, Long id, CartItems cartItem) throws CartItemException {
+	public List<CartItemDTO> displayCart(@Valid Long userId) {
 
-		CartItems item = findCartItemById(id);
-		UserDTO user = userService.findById(item.getUserId());
-
-		if (user.getId().equals(userId)) {
-
-			item.setQty(cartItem.getQty());
-			item.setPrice(item.getQty() * item.getProduct().getPrice());
-			item.setDiscountedPrice(item.getQty() * item.getProduct().getDiscountedPrice());
-
-			return cartItemsDao.save(item);
-		} else
-			throw new CartItemException("You Can't Update Another Cart");
+		return cartItemsDao.findByUserId(userId).stream().map(cartItem -> mapper.map(cartItem, CartItemDTO.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public CartItems isCartItemExist(Cart cart, Product product, Long userId) {
-		return cartItemsDao.isCartItemExist(cart, product, userId);
+	public ApiResponse removeFromCart(@Valid Long userId, @Valid Long productId) {
+
+		cartItemsDao.deleteByUserIdAndProductId(userId, productId);
+
+		return new ApiResponse("Product removed from the cart");
 	}
 
 	@Override
-	public void removeCartItem(Long userId, Long cartItemId) throws UserException, CartItemException {
-		System.out.println("userId- " + userId + " cartItemId " + cartItemId);
+	public ApiResponse setQuantity(@Valid CartItemQtyDTO quantity) {
 
-		CartItems cartItem = findCartItemById(cartItemId);
-
-		UserDTO user = userService.findById(cartItem.getUserId());
-		UserDTO reqUser = userService.findById(userId);
-
-		if (user.getId().equals(reqUser.getId()))
-			cartItemsDao.deleteById(cartItem.getId());
-		else
-			throw new UserException("you can't remove another user's item");
-
-	}
-
-	@Override
-	public CartItems findCartItemById(Long cartItemId) throws CartItemException {
-		Optional<CartItems> opt = cartItemsDao.findById(cartItemId);
-		if (opt.isPresent())
-			return opt.get();
-		throw new CartItemException("cartItem not found with id : " + cartItemId);
-
+		CartItems cartItems = cartItemsDao.findByUserIdAndProductId(quantity.getUserId(), quantity.getProductId());
+		cartItems.setQuantity(quantity.getQuantity());
+		return new ApiResponse("Quantity Set");
 	}
 
 }

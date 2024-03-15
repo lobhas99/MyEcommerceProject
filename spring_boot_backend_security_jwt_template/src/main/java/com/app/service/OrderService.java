@@ -2,31 +2,25 @@ package com.app.service;
 
 import java.util.List;
 
-import com.app.entity.Address;
-import com.app.entity.Order;
-import com.app.entity.User;
-import com.app.exception.OrderException;
+import com.app.dto.ApiResponse;
+import com.app.dto.CartItemDTO;
+import com.app.dto.OrderDTO;
+import com.app.dto.PlaceOrderDTO;
+import com.app.enums.OrderStatus;
+import com.app.exception.ResourceNotFoundException;
 
 public interface OrderService {
 
-public Order createOrder(User user, Address shippingAdress);
-	
-	public Order findOrderById(Long orderId) throws OrderException;
-	
-	public List<Order> usersOrderHistory(Long userId);
-	
-	public Order placedOrder(Long orderId) throws OrderException;
-	
-	public Order confirmedOrder(Long orderId)throws OrderException;
-	
-	public Order shippedOrder(Long orderId) throws OrderException;
-	
-	public Order deliveredOrder(Long orderId) throws OrderException;
-	
-	public Order cancelledOrder(Long orderId) throws OrderException;
-	
-	public List<Order>getAllOrders();
-	
-	public void deleteOrder(Long orderId) throws OrderException;
+	PlaceOrderDTO placeOrder(Long cId) throws ResourceNotFoundException;
+
+	ApiResponse cancelOrder(Long oId) throws ResourceNotFoundException;
+
+	ApiResponse changeOrderStatus(OrderStatus oStatus, Long oId) throws ResourceNotFoundException;
+
+	List<OrderDTO> getAllOrders(Long cId);
+
+	List<CartItemDTO> getAllOrderProducts(Long oId);
+
+	List<OrderDTO> getAll();
 
 }

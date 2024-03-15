@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.ApiResponse;
@@ -21,7 +24,9 @@ import com.app.exception.ProductException;
 import com.app.service.ProductService;
 
 @RestController
-@RequestMapping("/api/product")
+@Validated
+@CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
+@RequestMapping("/admin/product")
 public class AdminProductController {
 
 	@Autowired
@@ -36,7 +41,6 @@ public class AdminProductController {
 	@DeleteMapping("/{productId}/delete")
 	public ResponseEntity<ApiResponse> deleteProductHandler(@PathVariable Long productId) throws ProductException{
 		
-		System.out.println("delete product controller .... ");
 		String msg=productService.deleteProduct(productId);
 		System.out.println("delete product controller .... msg "+msg);
 		ApiResponse res=new ApiResponse(msg);
@@ -46,11 +50,11 @@ public class AdminProductController {
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<Product>> findAllProduct(){
+	public ResponseEntity<List<ProductDTO>> findAllProduct(){
 		
-		List<Product> products = productService.getAllProducts();
+		List<ProductDTO> products = productService.getAllProducts();
 		
-		return new ResponseEntity<List<Product>>(products,HttpStatus.OK);
+		return new ResponseEntity<List<ProductDTO>>(products,HttpStatus.OK);
 	}
 	
 	@GetMapping("/recent")

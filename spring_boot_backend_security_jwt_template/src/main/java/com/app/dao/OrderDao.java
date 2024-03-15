@@ -10,9 +10,6 @@ import com.app.entity.Order;
 
 public interface OrderDao extends JpaRepository<Order, Long> {
 
-	@Query("SELECT o FROM Order o WHERE o.user.id = :userId AND (o.orderStatus = PLACED OR o.orderStatus = CONFIRMED OR o.orderStatus = SHIPPED OR o.orderStatus = DELIVERED)")
-	public List<Order> getUsersOrders(@Param("userId") Long userId);
-	
-	List<Order> findAllByOrderByCreatedAtDesc();
+	List<Order> findByUserId(Long id);
 
 }

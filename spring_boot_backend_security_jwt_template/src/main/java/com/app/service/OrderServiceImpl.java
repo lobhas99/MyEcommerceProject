@@ -1,158 +1,125 @@
 package com.app.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.app.dao.AddressDao;
+import com.app.dao.CartItemsDao;
 import com.app.dao.OrderDao;
 import com.app.dao.OrderItemDao;
+import com.app.dao.ProductDao;
 import com.app.dao.UserDao;
-import com.app.entity.Address;
-import com.app.entity.Cart;
+import com.app.dto.ApiResponse;
+import com.app.dto.CartItemDTO;
+import com.app.dto.OrderDTO;
+import com.app.dto.PlaceOrderDTO;
 import com.app.entity.CartItems;
 import com.app.entity.Order;
 import com.app.entity.OrderItem;
-import com.app.entity.User;
 import com.app.enums.OrderStatus;
-import com.app.enums.PaymentStatus;
-import com.app.exception.OrderException;
+import com.app.exception.ResourceNotFoundException;
 
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
 	@Autowired
+	private CartItemsDao cartItemsDao;
+
+	@Autowired
 	private OrderDao orderDao;
 
 	@Autowired
-	private CartService cartService;
-
-	@Autowired
-	private AddressDao addressDao;
-
-	@Autowired
 	private UserDao userDao;
-	
+
+	@Autowired
+	private ModelMapper mapper;
+
 	@Autowired
 	private OrderItemDao orderItemDao;
 
+	@Autowired
+	private ProductDao productDao;
+
+	@Autowired
+	private EmailService emailService;
+
 	@Override
-	public Order createOrder(User user, Address shippingAdress) {
-		shippingAdress.setUser(user);
-		Address address = addressDao.save(shippingAdress);
-		user.getAddresses().add(address);
-		userDao.save(user);
+	public PlaceOrderDTO placeOrder(Long id) throws ResourceNotFoundException {
+		List<CartItems> cartItems = cartItemsDao.findByUserId(id);
+		if (cartItems.isEmpty())
+			return null;
+		Order order = orderDao.save(new Order(OrderStatus.CONFIRMED, LocalDate.now(), LocalDate.now().plusDays(5),
+				0, userDao.getReferenceById(id)));
+		List<OrderItem> orderItem = new ArrayList<OrderItem>();
+		cartItems.forEach(c -> orderItem.add(new OrderItem( c.getProduct(), c.getQuantity(), order)));
+		double total = 0;
+		for (CartItems cartItem : cartItems) {
 
-		Cart cart = cartService.findUserCart(user.getId());
-		List<OrderItem> orderItems = new ArrayList<>();
-
-		for (CartItems item : cart.getCartItems()) {
-			OrderItem orderItem = new OrderItem();
-
-			orderItem.setPrice(item.getPrice());
-			orderItem.setProduct(item.getProduct());
-			orderItem.setQuantity(item.getQty());
-			orderItem.setUserId(item.getUserId());
-			orderItem.setDiscountedPrice(item.getDiscountedPrice());
-
-			OrderItem createdOrderItem = orderItemDao.save(orderItem);
-
-			orderItems.add(createdOrderItem);
+			total += (cartItem.getProduct().getPrice() * cartItem.getQuantity());
+			if (cartItem.getProduct().getStock() >= cartItem.getQuantity())
+				productDao.updateProductStock(cartItem.getProduct().getId(), -cartItem.getQuantity());
+			else {
+				throw new ResourceNotFoundException("Insufficient stock available for : " + cartItem.getProduct().getTitle()
+						+ "STOCK LEFT : " + cartItem.getProduct().getStock());
+			}
 		}
+		order.setTotalAmount(total);
+		orderItemDao.saveAll(orderItem);
+		cartItemsDao.deleteAll(cartItems);
+		PlaceOrderDTO orderDto = mapper.map(order, PlaceOrderDTO.class);
+		return orderDto;
+	}
 
-		Order createdOrder = new Order();
-		createdOrder.setUser(user);
-		createdOrder.setOrderItems(orderItems);
-		createdOrder.setTotalPrice(cart.getTotalPrice());
-		createdOrder.setTotalDiscountedPrice(cart.getTotalDiscountedPrice());
-		createdOrder.setDiscount(cart.getTotalDiscount());
-		createdOrder.setTotalItems(cart.getTotalitems());
-
-		createdOrder.setShippingAddress(address);
-		createdOrder.setOrderDate(LocalDateTime.now());
-		createdOrder.setOrderStatus(OrderStatus.PENDING);
-		createdOrder.getPaymentDetails().setStatus(PaymentStatus.PENDING);
-		createdOrder.setCreatedAt(LocalDateTime.now());
-
-		Order savedOrder = orderDao.save(createdOrder);
-
-		for (OrderItem item : orderItems) {
-			item.setOrder(savedOrder);
-			orderItemDao.save(item);
+	@Override
+	public ApiResponse cancelOrder(Long oId) throws ResourceNotFoundException {
+		Order order = orderDao.findById(oId)
+				.orElseThrow(() -> new ResourceNotFoundException("Order/OrderId does not exists !!"));
+		if (order.getOrderStatus() == OrderStatus.CANCELLED)
+			return new ApiResponse("Order(" + oId + ") has already " + "CANCELLED");
+		List<OrderItem> orderQtys = orderItemDao.findByOrderId(oId);
+		for (OrderItem orderQty : orderQtys) {
+			productDao.updateProductStock(orderQty.getProduct().getId(), orderQty.getQuantity());
 		}
-		return savedOrder;
-	}
-
-	@Override
-	public Order findOrderById(Long orderId) throws OrderException {
-		Optional<Order> opt = orderDao.findById(orderId);
-
-		if (opt.isPresent()) {
-			return opt.get();
-		}
-		throw new OrderException("order not exist with id " + orderId);
-
-	}
-
-	@Override
-	public List<Order> usersOrderHistory(Long userId) {
-		List<Order> orders = orderDao.getUsersOrders(userId);
-		return orders;
-	}
-
-	@Override
-	public Order placedOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
-		order.setOrderStatus(OrderStatus.PLACED);
-		order.getPaymentDetails().setStatus(PaymentStatus.COMPLETED);
-		return order;
-	}
-
-	@Override
-	public Order confirmedOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
-		order.setOrderStatus(OrderStatus.CONFIRMED);
-		return orderDao.save(order);
-	}
-
-	@Override
-	public Order shippedOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
-		order.setOrderStatus(OrderStatus.SHIPPED);
-		return orderDao.save(order);
-	}
-
-	@Override
-	public Order deliveredOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
-		order.setOrderStatus(OrderStatus.DELIVERED);
-		return orderDao.save(order);
-	}
-
-	@Override
-	public List<Order> getAllOrders() {
-		return orderDao.findAllByOrderByCreatedAtDesc();
-	}
-
-	@Override
-	public void deleteOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
-		if (order != null)
-			orderDao.deleteById(orderId);
-	}
-
-	@Override
-	public Order cancelledOrder(Long orderId) throws OrderException {
-		Order order = findOrderById(orderId);
 		order.setOrderStatus(OrderStatus.CANCELLED);
-		return orderDao.save(order);
+		return new ApiResponse("Order(" + oId + ") has been CANCELLED");
+	}
+
+	@Override
+	public ApiResponse changeOrderStatus(OrderStatus oStatus, Long oId) throws ResourceNotFoundException {
+		Order order = orderDao.findById(oId)
+				.orElseThrow(() -> new ResourceNotFoundException("Order/OrderId does not exists !!"));
+		if (order.getOrderStatus() == OrderStatus.CANCELLED)
+			return new ApiResponse("Order(" + oId + ") is a CANCELLED order!");
+		if (oStatus == OrderStatus.CANCELLED)
+			return cancelOrder(oId);
+		order.setOrderStatus(oStatus);
+		return new ApiResponse("Order(" + oId + ") status changed to " + oStatus.toString());
+	}
+
+
+	@Override
+	public List<OrderDTO> getAllOrders(Long cId) {
+		return orderDao.findByUserId(cId).stream().map(order -> mapper.map(order, OrderDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CartItemDTO> getAllOrderProducts(Long oId) {
+		return orderItemDao.findByOrderId(oId).stream().map(orderItem -> mapper.map(orderItem, CartItemDTO.class))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<OrderDTO> getAll() {
+		return orderDao.findAll().stream().map(order -> mapper.map(order, OrderDTO.class)).collect(Collectors.toList());
 	}
 
 }

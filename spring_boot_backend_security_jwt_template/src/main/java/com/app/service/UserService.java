@@ -16,7 +16,7 @@ public interface UserService {
 
 	UserDTO findById(Long id);
 
-	List<UserDTO> findAllSellers();
+	List<UserDTO> findAllAdmins();
 
 	List<UserDTO> findAllCustomers();
 

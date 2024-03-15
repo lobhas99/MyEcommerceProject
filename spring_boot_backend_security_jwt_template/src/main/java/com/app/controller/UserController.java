@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,10 @@ import com.app.service.EmailService;
 import com.app.service.OtpGenerator;
 import com.app.service.UserService;
 
+@Validated
 @RestController
-@CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+		RequestMethod.DELETE })
 @RequestMapping("/api/user")
 public class UserController {
 
@@ -42,19 +45,19 @@ public class UserController {
 	@Autowired
 	ModelMapper mapper;
 
-	@GetMapping("/seller")
-	public ResponseEntity<?> findAllSellers() {
-		System.out.println("findAllSellers...");
-		List<UserDTO> result = userService.findAllSellers();
+	@GetMapping("/admin")
+	public ResponseEntity<?> findAllAdmins() {
+		System.out.println("findAllAdmins...");
+		List<UserDTO> result = userService.findAllAdmins();
 		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/seller/{id}")
-	public ResponseEntity<?> findSellerById(@PathVariable("id") Long id) {
-		System.out.println("findSellerById...");
+	@GetMapping("/admin/{id}")
+	public ResponseEntity<?> findAdminById(@PathVariable("id") Long id) {
+		System.out.println("findAdminById...");
 		UserDTO result = userService.findById(id);
 		if (result == null)
-			return new ResponseEntity<>(new ApiResponse("Seller not found!!"), HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(new ApiResponse("Admin not found!!"), HttpStatus.ACCEPTED);
 		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
 	}
 

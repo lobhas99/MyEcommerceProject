@@ -1,18 +1,13 @@
 package com.app.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.app.enums.OrderStatus;
@@ -30,34 +25,23 @@ import lombok.Setter;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
+	@Enumerated(EnumType.STRING)
+	private OrderStatus orderStatus;
+
+	@Column(name = "order_date")
+	private LocalDate orderDate;
+
+	@Column(name = "delivery_date")
+	private LocalDate deliveryDate;
+
+	@Column(name = "total_amount")
+	private double totalAmount;
+
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	private LocalDateTime orderDate;
-
-	private LocalDateTime deliveryDate;
-
-	private Integer discount;
-
-	@OneToOne
-	private Address shippingAddress;
-
-	private Integer totalItems;
-
-	private Integer totalDiscountedPrice;
-
-	private Integer totalPrice;
-
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<OrderItem> orderItems = new ArrayList<>();
-
-	private LocalDateTime createdAt;
-
-	@Enumerated(EnumType.STRING)
-	private OrderStatus orderStatus;
-
-	@Embedded
-	private PaymentDetails paymentDetails;
+//	@Embedded
+//	private PaymentDetails paymentDetails;
 
 }
