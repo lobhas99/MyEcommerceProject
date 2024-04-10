@@ -19,7 +19,6 @@ import com.app.dao.UserDao;
 import com.app.dto.ApiResponse;
 import com.app.dto.CartItemDTO;
 import com.app.dto.OrderDTO;
-import com.app.dto.PlaceOrderDTO;
 import com.app.entity.CartItems;
 import com.app.entity.Order;
 import com.app.entity.OrderItem;
@@ -52,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 	private EmailService emailService;
 
 	@Override
-	public PlaceOrderDTO placeOrder(Long id) throws ResourceNotFoundException {
+	public OrderDTO placeOrder(Long id) throws ResourceNotFoundException {
 		List<CartItems> cartItems = cartItemsDao.findByUserId(id);
 		if (cartItems.isEmpty())
 			return null;
@@ -74,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setTotalAmount(total);
 		orderItemDao.saveAll(orderItem);
 		cartItemsDao.deleteAll(cartItems);
-		PlaceOrderDTO orderDto = mapper.map(order, PlaceOrderDTO.class);
+		OrderDTO orderDto = mapper.map(order, OrderDTO.class);
 		return orderDto;
 	}
 

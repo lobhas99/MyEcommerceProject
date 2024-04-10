@@ -38,21 +38,20 @@ public class CartItemServiceImpl implements CartItemService {
 
 	@Override
 	public ApiResponse addToCart(@Valid Long userId, @Valid Long productId) {
-
 		CartItems cartItems = cartItemsDao.findByUserIdAndProductId(userId, productId);
-
 		if (cartItems != null)
 			return new ApiResponse("Product is already present in the cart");
-
-		User user = userDao.getReferenceById(userId);
-		Product product = productDao.getReferenceById(productId);
-		CartItems cartItem = new CartItems();
-		cartItem.setProduct(product);
-		cartItem.setQuantity(1);
-		cartItem.setUser(user);
-		cartItemsDao.save(cartItem);
-
-		return new ApiResponse("Product added to your cart");
+			User user = userDao.getReferenceById(userId);
+			Product product = productDao.getReferenceById(productId);
+		if (product.getStock() > 1) {
+			CartItems cartItem = new CartItems();
+			cartItem.setProduct(product);
+			cartItem.setQuantity(1);
+			cartItem.setUser(user);
+			cartItemsDao.save(cartItem);
+			return new ApiResponse("Product added to your cart");
+		}
+		return new ApiResponse("Product is Out of Stock");
 	}
 
 	@Override
@@ -74,8 +73,11 @@ public class CartItemServiceImpl implements CartItemService {
 	public ApiResponse setQuantity(@Valid CartItemQtyDTO quantity) {
 
 		CartItems cartItems = cartItemsDao.findByUserIdAndProductId(quantity.getUserId(), quantity.getProductId());
-		cartItems.setQuantity(quantity.getQuantity());
-		return new ApiResponse("Quantity Set");
+		if (cartItems.getProduct().getStock() >= quantity.getQuantity()) {
+			cartItems.setQuantity(quantity.getQuantity());
+			return new ApiResponse("Quantity Set");
+		} else
+			return new ApiResponse("Insufficent Quantity");
 	}
 
 }

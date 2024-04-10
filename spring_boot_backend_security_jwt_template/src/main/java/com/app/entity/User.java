@@ -41,7 +41,7 @@ public class User extends BaseEntity {
 	private Role role;
 
 	@Column(name = "mobile_no", length = 10)
-	private String mobileNumber;
+	private String mobileNo;
 
 	@Column(name = "birth_date")
 	private LocalDate birthDate;

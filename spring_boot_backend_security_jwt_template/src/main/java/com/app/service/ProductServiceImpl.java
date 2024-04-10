@@ -1,6 +1,5 @@
 package com.app.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,13 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.app.dao.ProductDao;
-import com.app.dao.UserDao;
 import com.app.dto.ProductDTO;
 import com.app.entity.Product;
-import com.app.entity.User;
 import com.app.enums.Category;
 import com.app.exception.ProductException;
-import com.app.utils.StorageService;
 
 @Service
 @Transactional
@@ -31,32 +27,17 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductDao productDao;
 
-	@Autowired
-	private UserDao userdao;
-
-	@Autowired
-	private StorageService storageService;
 
 	@Autowired
 	private ModelMapper mapper;
 
+	
 	@Override
-	public String createProduct(ProductDTO req) {
-		System.out.println(req);
-		User user = userdao.findById(req.getUserId()).orElse(null);
-		System.out.println(user);
-		if (user == null)
-			return "user not found";
-		Product product = new Product();
-		product = mapper.map(req, Product.class);
-		if (req.getPic() != null) {
-			String photo = storageService.store(req.getPic());
-			product.setPhoto(photo);
-		}
-		product.setCreatedAt(LocalDateTime.now());
-		productDao.save(product);
-		return "Product added Successfully";
+	public Product addProduct(ProductDTO p) {
+		Product product = mapper.map(p, Product.class);
+		return productDao.save(product);
 	}
+
 
 	@Override
 	public String deleteProduct(Long productId) throws ProductException {
@@ -78,10 +59,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDTO> getAllProducts() {
-		List<Product> product = productDao.findAll();
-
-		return product.stream().map(p -> mapper.map(p, ProductDTO.class)).collect(Collectors.toList());
+	public List<Product> getAllProducts() {
+		return productDao.findAll();
 
 	}
 
@@ -90,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 		Optional<Product> opt = productDao.findById(id);
 		if (opt.isPresent())
 			return opt.get();
-		throw new ProductException("product not found with id " + id);
+		throw new ProductException("Product not found with id " + id);
 	}
 
 	@Override
@@ -131,3 +110,5 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 }
+
+

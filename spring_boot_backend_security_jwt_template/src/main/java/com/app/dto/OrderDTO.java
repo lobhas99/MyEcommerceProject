@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-	private Long orderId;
+	private Long id;
 
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;

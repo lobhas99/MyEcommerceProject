@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,12 +9,13 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;	
 import org.springframework.stereotype.Service;
 
 import com.app.dao.UserDao;
 import com.app.dto.UserDTO;
 import com.app.entity.User;
+import com.app.enums.Role;
 
 @Service
 @Transactional
@@ -32,28 +34,30 @@ public class UserServiceImp implements UserService {
 	public UserDTO userRegistration(UserDTO reqDTO) {
 		User user = mapper.map(reqDTO, User.class);
 		user.setPassword(encoder.encode(reqDTO.getPassword()));
+		user.setRole(Role.ROLE_CUSTOMER);
+		user.setCreatedAt(LocalDateTime.now());
 		return mapper.map(userDao.save(user), UserDTO.class);
 	}
 
 	@Override
 	public List<UserDTO> findAllAdmins() {
-		List<User> users=userDao.findAllAdmins();
-		return users.stream().map(u->mapper.map(u,UserDTO.class)).collect(Collectors.toList());
+		List<User> users = userDao.findAllAdmins();
+		return users.stream().map(u -> mapper.map(u, UserDTO.class)).collect(Collectors.toList());
 	}
 
 	@Override
 	public UserDTO findById(Long id) {
 		User user = userDao.findById(id).orElse(null);
-		if(user==null)
+		if (user == null)
 			return null;
-		return mapper.map(user, UserDTO.class) ;
+		return mapper.map(user, UserDTO.class);
 	}
 
 	@Override
 	public List<UserDTO> findAllCustomers() {
-		List<User> users=userDao.findAllCustomers();
-		return users.stream().map(u->mapper.map(u,UserDTO.class)).collect(Collectors.toList());
-		}
+		List<User> users = userDao.findAllCustomers();
+		return users.stream().map(u -> mapper.map(u, UserDTO.class)).collect(Collectors.toList());
+	}
 
 //	@Override
 //	public void updateProfile(UserDTO userDTO, int id) {
@@ -85,6 +89,5 @@ public class UserServiceImp implements UserService {
 		user.setPassword(encodedPassword);
 		userDao.save(user);
 	}
-
 
 }

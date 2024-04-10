@@ -2,7 +2,7 @@
 package com.app.dto;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -37,12 +37,14 @@ public class UserDTO {
 
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
+	
+	private String mobileNo;
 
 	private Role role;
 
 	private LocalDate birthDate;
 
-	private Date createdTimestamp = new Date();
+	private LocalDateTime createdTimestamp;
 
 	private String otp;
 

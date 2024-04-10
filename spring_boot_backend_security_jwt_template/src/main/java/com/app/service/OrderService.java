@@ -5,13 +5,12 @@ import java.util.List;
 import com.app.dto.ApiResponse;
 import com.app.dto.CartItemDTO;
 import com.app.dto.OrderDTO;
-import com.app.dto.PlaceOrderDTO;
 import com.app.enums.OrderStatus;
 import com.app.exception.ResourceNotFoundException;
 
 public interface OrderService {
 
-	PlaceOrderDTO placeOrder(Long cId) throws ResourceNotFoundException;
+	OrderDTO placeOrder(Long cId) throws ResourceNotFoundException;
 
 	ApiResponse cancelOrder(Long oId) throws ResourceNotFoundException;
 

@@ -1,0 +1,14 @@
+body {
+  /* margin-top: 10px; */
+  background-image: url('../assets/cart.jpg');
+
+  /* Relative path from the public folder */
+    background: size 10px;  
+  /* hei  */
+  /* height: 744px;
+  width: 826px; */
+  /* Cover the entire viewport */
+  /* background-position: 100%; */
+  /* Center the background image */
+
+}

@@ -76,6 +76,16 @@ public class UserController {
 			return new ResponseEntity<>(new ApiResponse("Customer not found!!"), HttpStatus.ACCEPTED);
 		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
 	}
+	
+	@GetMapping("/{email}")
+	public ResponseEntity<?> findUserByEmail(@PathVariable("email") String email) {
+		System.out.println("findCustomerById..."+email);
+		User result = userService.findByEmail(email);
+		if (result == null)
+			return new ResponseEntity<>(new ApiResponse("User not found!!"), HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+	}
+	
 
 //	@PutMapping("{id}")
 //	public ResponseEntity<?> updateProfile(@RequestBody User User, @PathVariable("id") int id) {

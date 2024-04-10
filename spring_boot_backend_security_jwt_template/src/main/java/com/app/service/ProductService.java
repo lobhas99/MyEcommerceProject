@@ -3,6 +3,7 @@ package com.app.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.dto.ProductDTO;
 import com.app.entity.Product;
@@ -15,7 +16,7 @@ public interface ProductService {
 
 	Product updateProduct(Long productId, Product product) throws ProductException;
 
-	List<ProductDTO> getAllProducts();
+	List<Product> getAllProducts();
 
 	Product findProductById(Long id) throws ProductException;
 
@@ -28,6 +29,6 @@ public interface ProductService {
 
 	List<Product> recentlyAddedProduct();
 
-	String createProduct(ProductDTO req);
+	Product addProduct(ProductDTO p);
 
 }

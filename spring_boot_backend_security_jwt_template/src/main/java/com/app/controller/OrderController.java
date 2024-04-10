@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.dto.ApiResponse;
 import com.app.dto.CartItemDTO;
 import com.app.dto.OrderDTO;
-import com.app.dto.PlaceOrderDTO;
 import com.app.exception.ResourceNotFoundException;
 import com.app.service.OrderService;
 
@@ -33,9 +32,9 @@ public class OrderController {
 	@Autowired
 	OrderService orderService;
 
-	@PostMapping("/{Id}")
-	public ResponseEntity<?> placeOrder(@PathVariable Long Id) throws ResourceNotFoundException {
-		PlaceOrderDTO orderDto = orderService.placeOrder(Id);
+	@PostMapping("/{id}")
+	public ResponseEntity<?> placeOrder(@PathVariable Long id) throws ResourceNotFoundException {
+		OrderDTO orderDto = orderService.placeOrder(id);
 		if (orderDto == null)
 			return ResponseEntity.ok(new ApiResponse("Cart is Empty !!!"));
 
@@ -47,17 +46,17 @@ public class OrderController {
 		return ResponseEntity.ok(orderService.cancelOrder(oId));
 	}
 
-	@GetMapping("/{Id}")
-	public ResponseEntity<?> getAllOrders(@PathVariable Long Id) {
-		List<OrderDTO> list = orderService.getAllOrders(Id);
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getAllOrders(@PathVariable Long id) {
+		List<OrderDTO> list = orderService.getAllOrders(id);
 		if (!list.isEmpty())
 			return ResponseEntity.ok(list);
 		else
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("You have no orders yet!!"));
 	}
 
-	@GetMapping("/books/{oId}")
-	public ResponseEntity<?> getAllBooksOfOrder(@PathVariable Long oId) {
+	@GetMapping("/product/{oId}")
+	public ResponseEntity<?> getAllProductsOfOrder(@PathVariable Long oId) {
 		List<CartItemDTO> list = orderService.getAllOrderProducts(oId);
 		if (!list.isEmpty())
 			return ResponseEntity.ok(list);

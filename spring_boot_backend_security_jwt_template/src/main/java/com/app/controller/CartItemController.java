@@ -43,7 +43,7 @@ public class CartItemController {
 	public ResponseEntity<?> removeFromCart(@PathVariable @Valid Long Id, @PathVariable @Valid Long productId) {
 		return ResponseEntity.status(HttpStatus.OK).body(cartItemService.removeFromCart(Id, productId));
 	}
-
+		
 	@PutMapping("/cart/qty")
 	public ResponseEntity<?> setQuantity(@RequestBody @Valid CartItemQtyDTO cartItems) {
 		System.out.println(cartItems);

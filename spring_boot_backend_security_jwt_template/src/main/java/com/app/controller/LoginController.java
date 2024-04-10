@@ -24,7 +24,7 @@ import com.app.service.UserService;
 
 @Validated
 @RestController
-@CrossOrigin(origins = "*",methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
+@CrossOrigin(origins = 	"*",methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 @RequestMapping("/user")
 public class LoginController {
 

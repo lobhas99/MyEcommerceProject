@@ -2,7 +2,14 @@ package com.app.dto;
 
 import java.time.LocalDate;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.app.entity.Product;
+import com.app.enums.Category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +23,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class ProductDTO {
-	
+
 	private int isbn;
 
 	private String title;
@@ -26,17 +33,12 @@ public class ProductDTO {
 	private String author;
 
 	private int price;
-	
-	private Long userId;
-	
-	private MultipartFile pic;
-	
-	private int discountedPrice;
 
-	private String category;
+	private int stock;
 
-	private String photo;
-	
+	@Enumerated(EnumType.STRING)
+	private Category category;
+
 	private LocalDate releasedDate;
-	
+
 }
